@@ -11,16 +11,32 @@ final class IAPManager {
     
     static let shared = IAPManager()
     
-    private let formatter = ISO8601DateFormatter()
-    
     private init() {}
-    
-    private var postEligibleViewDate: Date? {
-        return nil
-    }
     
     var isPremium: Bool {
         get { UserDefaults.standard.bool(forKey: "premium") }
         set { UserDefaults.standard.set(newValue, forKey: "premium") }
+    }
+    
+    func fetchSubscriptionOptions(completion: @escaping (Bool) -> Void) {
+        completion(true)
+    }
+    
+    func subscribe(completion: @escaping (Bool) -> Void) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
+            let success = Bool.random() || true
+            self?.isPremium = success
+            completion(success)
+        }
+    }
+    
+    func restorePurchases(completion: @escaping (Bool) -> Void) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
+            let success = Bool.random()
+            if success {
+                self?.isPremium = true
+            }
+            completion(success)
+        }
     }
 }

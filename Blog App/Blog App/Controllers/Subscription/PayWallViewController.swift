@@ -10,7 +10,6 @@ import UIKit
 class PayWallViewController: UIViewController {
     
     private let headerView = PayWallHeaderView()
-    
     private let descriptionView = PayWallDescriptionView()
     
     private let subscribeButton = UIButton(type: .system)
@@ -22,8 +21,6 @@ class PayWallViewController: UIViewController {
         super.viewDidLoad()
         title = "Blog App Premium"
         view.backgroundColor = .systemBackground
-        
-        descriptionView.backgroundColor = .systemRed
         
         setupCloseButton()
         setupLayout()
@@ -65,18 +62,25 @@ private extension PayWallViewController {
             headerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             headerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             
-            subscribeButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            subscribeButton.topAnchor.constraint(equalTo: headerView.bottomAnchor, constant: 40),
-            subscribeButton.widthAnchor.constraint(equalToConstant: 200),
+            subscribeButton.bottomAnchor.constraint(equalTo: restoreButton.topAnchor, constant: -10),
+            subscribeButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 25),
+            subscribeButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -25),
             subscribeButton.heightAnchor.constraint(equalToConstant: 50),
             
-            restoreButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            restoreButton.topAnchor.constraint(equalTo: subscribeButton.bottomAnchor, constant: 20),
+            restoreButton.bottomAnchor.constraint(equalTo: termsTextView.topAnchor, constant: -70),
+            restoreButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 25),
+            restoreButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -25),
+            restoreButton.heightAnchor.constraint(equalToConstant: 50),
             
-            termsTextView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20),
-            termsTextView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            termsTextView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-            termsTextView.heightAnchor.constraint(equalToConstant: 100)
+            termsTextView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            termsTextView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10),
+            termsTextView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10),
+            termsTextView.heightAnchor.constraint(equalToConstant: 100),
+            
+            descriptionView.topAnchor.constraint(equalTo: headerView.bottomAnchor),
+            descriptionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            descriptionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            descriptionView.bottomAnchor.constraint(equalTo: subscribeButton.topAnchor)
         ])
     }
 }
@@ -90,20 +94,50 @@ private extension PayWallViewController {
         subscribeButton.setTitleColor(.white, for: .normal)
         subscribeButton.backgroundColor = .systemBlue
         subscribeButton.layer.cornerRadius = 10
-        //        subscribeButton.addTarget(self, action: #selector(didSubscribeButtonTapped), for: .touchUpInside)
+        subscribeButton.addTarget(self, action: #selector(didSubscribeButtonTapped), for: .touchUpInside)
         
         restoreButton.setTitle("Restore Purchases", for: .normal)
         restoreButton.setTitleColor(.link, for: .normal)
         restoreButton.layer.cornerRadius = 10
-        //        restoreButton.addTarget(self, action: #selector(didRestoreButtonTapped), for: .touchUpInside)
+        restoreButton.addTarget(self, action: #selector(didRestoreButtonTapped), for: .touchUpInside)
     }
     
     @objc func didSubscribeButtonTapped() {
-        // Добавить реализацию в IAPManager.swift
+        subscribeButton.isEnabled = false
+        subscribeButton.backgroundColor = .gray
+        
+        IAPManager.shared.fetchSubscriptionOptions { [weak self] _ in
+            IAPManager.shared.subscribe { success in
+                DispatchQueue.main.async {
+                    self?.subscribeButton.isEnabled = true
+                    self?.subscribeButton.backgroundColor = .systemBlue
+                    
+                    if success {
+                        self?.dismiss(animated: true)
+                    } else {
+                        self?.showAlert(title: "Subscription failed",
+                                        message: "We were unable to complete the transaction.")
+                    }
+                }
+            }
+        }
     }
     
     @objc func didRestoreButtonTapped() {
-        // Добавить реализацию в IAPManager.swift
+        restoreButton.isEnabled = false
+        
+        IAPManager.shared.restorePurchases { [weak self] success in
+            DispatchQueue.main.async {
+                self?.restoreButton.isEnabled = true
+                
+                if success {
+                    self?.dismiss(animated: true)
+                } else {
+                    self?.showAlert(title: "Restoration Failed",
+                                    message: "We were unable to restore a previous transaction.")
+                }
+            }
+        }
     }
     
     func showAlert(title: String, message: String) {

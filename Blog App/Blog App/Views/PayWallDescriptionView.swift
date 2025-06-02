@@ -42,6 +42,7 @@ class PayWallDescriptionView: UIView {
     }
 }
 
+// MARK: - Setup Layout
 private extension PayWallDescriptionView {
     
     func setupLayout() {
@@ -51,13 +52,15 @@ private extension PayWallDescriptionView {
         }
         
         NSLayoutConstraint.activate([
-            descriptionLabel.topAnchor.constraint(equalTo: topAnchor),
-            descriptionLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 20),
-            descriptionLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -20),
+            descriptionLabel.topAnchor.constraint(equalTo: topAnchor, constant: 16),
+            descriptionLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 24),
+            descriptionLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -24),
             
             priceLabel.topAnchor.constraint(equalTo: descriptionLabel.bottomAnchor, constant: 16),
+            priceLabel.leadingAnchor.constraint(greaterThanOrEqualTo: leadingAnchor, constant: 20),
+            priceLabel.trailingAnchor.constraint(lessThanOrEqualTo: trailingAnchor, constant: -20),
             priceLabel.centerXAnchor.constraint(equalTo: centerXAnchor),
-            priceLabel.bottomAnchor.constraint(equalTo: bottomAnchor)
+            priceLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -16)
         ])
     }
 }
