@@ -32,8 +32,7 @@ class PayWallDescriptionView: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         clipsToBounds = true
-        addSubview(descriptionLabel)
-        addSubview(priceLabel)
+        
         setupLayout()
     }
     
@@ -48,6 +47,7 @@ private extension PayWallDescriptionView {
     func setupLayout() {
         
         [descriptionLabel, priceLabel].forEach {
+            addSubview($0)
             $0.translatesAutoresizingMaskIntoConstraints = false
         }
         
