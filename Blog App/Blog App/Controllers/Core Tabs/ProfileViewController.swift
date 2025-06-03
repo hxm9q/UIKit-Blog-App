@@ -9,6 +9,24 @@ import UIKit
 
 class ProfileViewController: UIViewController {
     
+    private var user: User?
+    
+    let currentEmail: String
+    
+    init(currentEmail: String) {
+        self.currentEmail = currentEmail
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    private let tableView = UITableView()
+    
+    private let headerView = UIView()
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
@@ -19,6 +37,10 @@ class ProfileViewController: UIViewController {
             target: self,
             action: #selector(didSignOutTapped)
         )
+        
+        setupLayout()
+        setupTableView()
+        title = "Profile"
         
         
     }
@@ -57,4 +79,48 @@ private extension ProfileViewController {
         present(alert, animated: true)
     }
     
+}
+
+// MARK: - Setup Layout
+private extension ProfileViewController {
+    
+    func setupLayout() {
+        
+        [tableView, headerView].forEach {
+            view.addSubview($0)
+            $0.translatesAutoresizingMaskIntoConstraints = false
+        }
+        
+        NSLayoutConstraint.activate([
+            tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            tableView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+            tableView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
+            tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            
+            
+        ])
+    }
+}
+
+// MARK: - Setup TableView & Delegate
+extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
+    
+    private func setupTableView() {
+        
+        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
+        tableView.delegate = self
+        tableView.dataSource = self
+    }
+    
+    private func setupTableHeader(profilePhotoRef: String? = nil, name: String? = nil) {
+        
+    }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        <#code#>
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        <#code#>
+    }
 }
