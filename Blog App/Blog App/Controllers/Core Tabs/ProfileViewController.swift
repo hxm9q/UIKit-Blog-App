@@ -64,7 +64,7 @@ class ProfileViewController: UIViewController {
             width: view.width,
             height: view.width / 1.5
         ))
-        headerView.backgroundColor = .systemBlue
+        headerView.backgroundColor = .systemBackground
         headerView.isUserInteractionEnabled = true
         headerView.clipsToBounds = true
         tableView.tableHeaderView = headerView

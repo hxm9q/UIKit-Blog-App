@@ -2,43 +2,103 @@
 //  SignUpViewController.swift
 //  Blog App
 //
-//  Created by  Антон Шадрин on 28.05.2025.
+//  Created by Антон Шадрин on 28.05.2025.
 //
 
 import UIKit
 
 class SignUpViewController: UITabBarController {
     
+    // MARK: - UI Components
+    
     private let headerView = SignInHeaderView()
     
-    private let nameField = UITextField()
-    private let emailField = UITextField()
-    private let passwordField = UITextField()
+    private let nameField: UITextField = {
+        let field = UITextField()
+        field.placeholder = "Full Name"
+        field.autocapitalizationType = .none
+        field.autocorrectionType = .no
+        field.backgroundColor = .secondarySystemBackground
+        field.returnKeyType = .next
+        field.borderStyle = .roundedRect
+        field.layer.cornerRadius = 8
+        field.clearButtonMode = .whileEditing
+        
+        return field
+    }()
     
-    private let signUpButton = UIButton(type: .system)
+    private let emailField: UITextField = {
+        let field = UITextField()
+        field.placeholder = "Enter your email here:"
+        field.autocapitalizationType = .none
+        field.autocorrectionType = .no
+        field.backgroundColor = .secondarySystemBackground
+        field.keyboardType = .emailAddress
+        field.returnKeyType = .next
+        field.borderStyle = .roundedRect
+        field.layer.cornerRadius = 8
+        field.clearButtonMode = .whileEditing
+        
+        return field
+    }()
+    
+    private let passwordField: UITextField = {
+        let field = UITextField()
+        field.placeholder = "Enter your password here:"
+        field.autocapitalizationType = .none
+        field.autocorrectionType = .no
+        field.backgroundColor = .secondarySystemBackground
+        field.isSecureTextEntry = true
+        field.returnKeyType = .done
+        field.borderStyle = .roundedRect
+        field.layer.cornerRadius = 8
+        field.clearButtonMode = .whileEditing
+        
+        return field
+    }()
+    
+    private let signUpButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("Create Account", for: .normal)
+        button.setTitleColor(.white, for: .normal)
+        button.backgroundColor = .systemGreen
+        button.layer.cornerRadius = 8
+        
+        return button
+    }()
+    
+    // MARK: - Lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = "Create Account"
-        view.backgroundColor = .systemBackground
-        view.addSubview(headerView)
-        
-        setupLayout()
-        setupTextFields()
-        setupButton()
+        setupView()
+        setupConstraints()
+        setupActions()
     }
-    
 }
 
-// MARK: - Setup Layout
+// MARK: - Setup Methods
+
 private extension SignUpViewController {
     
-    func setupLayout() {
+    func setupView() {
         
-        [nameField, headerView, emailField, passwordField, signUpButton].forEach {
+        title = "Create Account"
+        view.backgroundColor = .systemBackground
+        
+        [headerView, nameField, emailField, passwordField, signUpButton].forEach {
             view.addSubview($0)
             $0.translatesAutoresizingMaskIntoConstraints = false
         }
+        
+        nameField.delegate = self
+        emailField.delegate = self
+        passwordField.delegate = self
+        
+        nameField.becomeFirstResponder()
+    }
+    
+    func setupConstraints() {
         
         NSLayoutConstraint.activate([
             headerView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
@@ -66,78 +126,16 @@ private extension SignUpViewController {
             signUpButton.heightAnchor.constraint(equalToConstant: 40)
         ])
     }
-}
-
-// MARK: - Setup Text Fields & Delegate
-extension SignUpViewController: UITextFieldDelegate {
     
-    private func setupTextFields() {
+    func setupActions() {
         
-        nameField.placeholder = "Full Name"
-        nameField.autocapitalizationType = .none
-        nameField.autocorrectionType = .no
-        nameField.backgroundColor = .secondarySystemBackground
-        nameField.returnKeyType = .next
-        nameField.borderStyle = .roundedRect
-        nameField.layer.cornerRadius = 8
-        nameField.clearButtonMode = .whileEditing
-        nameField.delegate = self
-        
-        emailField.placeholder = "Enter your email here:"
-        emailField.autocapitalizationType = .none
-        emailField.autocorrectionType = .no
-        emailField.backgroundColor = .secondarySystemBackground
-        emailField.keyboardType = .emailAddress
-        emailField.returnKeyType = .next
-        emailField.borderStyle = .roundedRect
-        emailField.layer.cornerRadius = 8
-        emailField.clearButtonMode = .whileEditing
-        emailField.delegate = self
-        
-        passwordField.placeholder = "Enter your password here:"
-        passwordField.autocapitalizationType = .none
-        passwordField.autocorrectionType = .no
-        passwordField.backgroundColor = .secondarySystemBackground
-        passwordField.isSecureTextEntry = true
-        passwordField.returnKeyType = .done
-        passwordField.borderStyle = .roundedRect
-        passwordField.layer.cornerRadius = 8
-        passwordField.clearButtonMode = .whileEditing
-        passwordField.delegate = self
-        
-        nameField.becomeFirstResponder()
-    }
-    
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        switch textField {
-        case nameField:
-            emailField.becomeFirstResponder()
-        case emailField:
-            passwordField.becomeFirstResponder()
-        case passwordField:
-            passwordField.resignFirstResponder()
-            signUpButtonTapped()
-        default:
-            textField.resignFirstResponder()
-        }
-        
-        return true
-    }
-    
-}
-
-// MARK: - Setup Buttons
-private extension SignUpViewController {
-    
-    func setupButton() {
-        
-        signUpButton.setTitle("Create Account", for: .normal)
-        signUpButton.setTitleColor(.white, for: .normal)
-        signUpButton.backgroundColor = .systemGreen
-        signUpButton.layer.cornerRadius = 8
         signUpButton.addTarget(self, action: #selector(signUpButtonTapped), for: .touchUpInside)
-        
     }
+}
+
+// MARK: - Action Methods
+
+private extension SignUpViewController {
     
     @objc func signUpButtonTapped() {
         
@@ -168,7 +166,7 @@ private extension SignUpViewController {
         
         AuthManager.shared.signUp(email: email, password: password) { [weak self] success in
             if success {
-                loadingIndicator.removeFromSuperview() // убрать если что
+                loadingIndicator.removeFromSuperview()
                 let newUser = User(name: name, email: email, profilePictureRef: nil)
                 DatabaseManager.shared.insert(user: newUser) { inserted in
                     guard inserted else {
@@ -188,7 +186,27 @@ private extension SignUpViewController {
                 self?.showAlert(title: "Error", message: "Failed to create account")
             }
         }
-        
     }
+}
+
+// MARK: - UITextFieldDelegate
+
+extension SignUpViewController: UITextFieldDelegate {
     
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        
+        switch textField {
+        case nameField:
+            emailField.becomeFirstResponder()
+        case emailField:
+            passwordField.becomeFirstResponder()
+        case passwordField:
+            passwordField.resignFirstResponder()
+            signUpButtonTapped()
+        default:
+            textField.resignFirstResponder()
+        }
+        
+        return true
+    }
 }

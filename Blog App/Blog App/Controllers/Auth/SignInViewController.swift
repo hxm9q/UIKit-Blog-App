@@ -2,45 +2,94 @@
 //  SignInViewController.swift
 //  Blog App
 //
-//  Created by  Антон Шадрин on 28.05.2025.
+//  Created by Антон Шадрин on 28.05.2025.
 //
 
 import UIKit
 
 class SignInViewController: UITabBarController {
     
+    // MARK: - UI Components
+    
     private let headerView = SignInHeaderView()
     
-    private let emailField = UITextField()
-    private let passwordField = UITextField()
+    private let emailField: UITextField = {
+        let field = UITextField()
+        field.placeholder = "Enter your email here:"
+        field.autocapitalizationType = .none
+        field.autocorrectionType = .no
+        field.backgroundColor = .secondarySystemBackground
+        field.keyboardType = .emailAddress
+        field.returnKeyType = .next
+        field.borderStyle = .roundedRect
+        field.layer.cornerRadius = 8
+        field.clearButtonMode = .whileEditing
+        
+        return field
+    }()
     
-    private let signInButton = UIButton(type: .system)
+    private let passwordField: UITextField = {
+        let field = UITextField()
+        field.placeholder = "Enter your password here:"
+        field.autocapitalizationType = .none
+        field.autocorrectionType = .no
+        field.backgroundColor = .secondarySystemBackground
+        field.isSecureTextEntry = true
+        field.returnKeyType = .done
+        field.borderStyle = .roundedRect
+        field.layer.cornerRadius = 8
+        field.clearButtonMode = .whileEditing
+        
+        return field
+    }()
     
-    private let createAccountButton = UIButton(type: .system)
+    private let signInButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("Sign In", for: .normal)
+        button.setTitleColor(.white, for: .normal)
+        button.backgroundColor = .systemBlue
+        button.layer.cornerRadius = 8
+        
+        return button
+    }()
+    
+    private let createAccountButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("Create Account", for: .normal)
+        button.setTitleColor(.link, for: .normal)
+        
+        return button
+    }()
+    
+    // MARK: - Lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = "Sign In"
-        view.backgroundColor = .systemBackground
-        view.addSubview(headerView)
-        
-        setupLayout()
-        setupTextFields()
-        setupButtons()
-        
+        setupView()
+        setupConstraints()
+        setupActions()
     }
-    
 }
 
-// MARK: - Setup Layout
+// MARK: - Setup Methods
+
 private extension SignInViewController {
     
-    func setupLayout() {
+    func setupView() {
+        
+        title = "Sign In"
+        view.backgroundColor = .systemBackground
         
         [headerView, emailField, passwordField, signInButton, createAccountButton].forEach {
             view.addSubview($0)
             $0.translatesAutoresizingMaskIntoConstraints = false
         }
+        
+        emailField.delegate = self
+        passwordField.delegate = self
+    }
+    
+    func setupConstraints() {
         
         NSLayoutConstraint.activate([
             headerView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
@@ -68,66 +117,20 @@ private extension SignInViewController {
             createAccountButton.heightAnchor.constraint(equalToConstant: 40),
         ])
     }
-}
-
-// MARK: - Setup Text Fields
-extension SignInViewController: UITextFieldDelegate {
     
-    private func setupTextFields() {
+    func setupActions() {
         
-        emailField.placeholder = "Enter your email here:"
-        emailField.autocapitalizationType = .none
-        emailField.autocorrectionType = .no
-        emailField.backgroundColor = .secondarySystemBackground
-        emailField.keyboardType = .emailAddress
-        emailField.returnKeyType = .next
-        emailField.borderStyle = .roundedRect
-        emailField.layer.cornerRadius = 8
-        emailField.clearButtonMode = .whileEditing
-        emailField.delegate = self
-        
-        passwordField.placeholder = "Enter your password here:"
-        passwordField.autocapitalizationType = .none
-        passwordField.autocorrectionType = .no
-        passwordField.backgroundColor = .secondarySystemBackground
-        passwordField.isSecureTextEntry = true
-        passwordField.returnKeyType = .done
-        passwordField.borderStyle = .roundedRect
-        passwordField.layer.cornerRadius = 8
-        passwordField.clearButtonMode = .whileEditing
-        passwordField.delegate = self
-    }
-    
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        if textField == emailField {
-            passwordField.becomeFirstResponder()
-        } else if textField == passwordField {
-            passwordField.resignFirstResponder()
-            // Логика входа
-        }
-        
-        return true
-    }
-    
-}
-
-// MARK: - Setup Buttons
-private extension SignInViewController {
-    
-    func setupButtons() {
-        
-        signInButton.setTitle("Sign In", for: .normal)
-        signInButton.setTitleColor(.white, for: .normal)
-        signInButton.backgroundColor = .systemBlue
-        signInButton.layer.cornerRadius = 8
         signInButton.addTarget(self, action: #selector(signInButtonTapped), for: .touchUpInside)
-        
-        createAccountButton.setTitle("Create Account", for: .normal)
-        createAccountButton.setTitleColor(.link, for: .normal)
         createAccountButton.addTarget(self, action: #selector(createAccountButtonTapped), for: .touchUpInside)
     }
+}
+
+// MARK: - Action Methods
+
+private extension SignInViewController {
     
     @objc func signInButtonTapped() {
+        
         guard
             let email = emailField.text, !email.isEmpty,
             let password = passwordField.text, !password.isEmpty
@@ -155,10 +158,26 @@ private extension SignInViewController {
     }
     
     @objc func createAccountButtonTapped() {
+        
         let vc = SignUpViewController()
         vc.title = "Create Account"
         vc.navigationItem.largeTitleDisplayMode = .never
         navigationController?.pushViewController(vc, animated: true)
     }
+}
+
+// MARK: - UITextFieldDelegate
+
+extension SignInViewController: UITextFieldDelegate {
     
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        
+        if textField == emailField {
+            passwordField.becomeFirstResponder()
+        } else if textField == passwordField {
+            passwordField.resignFirstResponder()
+            signInButtonTapped()
+        }
+        return true
+    }
 }
