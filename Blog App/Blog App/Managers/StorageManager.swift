@@ -103,7 +103,6 @@ final class StorageManager {
                 return
             }
             
-            // Сохраняем временный файл и возвращаем его URL
             let tempDirectory = FileManager.default.temporaryDirectory
             let fileURL = tempDirectory.appendingPathComponent("\(docId).jpg")
             
@@ -132,6 +131,23 @@ final class StorageManager {
             imageData = image.jpegData(compressionQuality: compression) ?? Data()
         }
         return imageData
+    }
+    
+    public func downloadProfileImage(email: String, completion: @escaping (UIImage?) -> Void) {
+        downloadUrlForProfilePicture(email: email) { url in
+            guard let url = url else {
+                completion(nil)
+                return
+            }
+            DispatchQueue.global().async {
+                do {
+                    let data = try Data(contentsOf: url)
+                    completion(UIImage(data: data))
+                } catch {
+                    completion(nil)
+                }
+            }
+        }
     }
     
 }

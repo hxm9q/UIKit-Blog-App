@@ -8,13 +8,13 @@
 import UIKit
 
 class TabBarViewController: UITabBarController {
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         setupControllers()
     }
-
+    
 }
 
 // MARK: - Setup Controllers
@@ -22,8 +22,15 @@ private extension TabBarViewController {
     
     func setupControllers() {
         
+        guard let currentUserEmail = UserDefaults.standard.string(forKey: "email") else {
+            AuthManager.shared.signOut { _ in
+                // do nothing
+            }
+            return
+        }
+        
         let home = HomeViewController()
-        let profile = ProfileViewController()
+        let profile = ProfileViewController(currentEmail: currentUserEmail)
         
         home.title = "Home"
         home.navigationItem.largeTitleDisplayMode = .always

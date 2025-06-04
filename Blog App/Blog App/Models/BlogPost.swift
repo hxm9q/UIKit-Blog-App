@@ -10,7 +10,7 @@ import Foundation
 struct BlogPost {
     let identifier: String
     let title: String
-    let text: String
     let timestamp: TimeInterval
-    let headerImageURL: URL?
+    let headerImageUrl: URL?
+    let text: String
 }

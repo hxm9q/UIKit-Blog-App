@@ -30,6 +30,47 @@ final class DatabaseManager {
         
     }
     
+    public func getPosts(
+        for email: String,
+        completion: @escaping ([BlogPost]) -> Void
+    ) {
+        let userEmail = email
+            .replacingOccurrences(of: ".", with: "_")
+            .replacingOccurrences(of: "@", with: "_")
+        database
+            .collection("users")
+            .document(userEmail)
+            .collection("posts")
+            .getDocuments { snapshot, error in
+                guard let documents = snapshot?.documents.compactMap({ $0.data() }),
+                      error == nil else {
+                    return
+                }
+                
+                let posts: [BlogPost] = documents.compactMap({ dictionary in
+                    guard let id = dictionary["id"] as? String,
+                          let title = dictionary["title"] as? String,
+                          let body = dictionary["body"] as? String,
+                          let created = dictionary["created"] as? TimeInterval,
+                          let imageUrlString = dictionary["headerImageUrl"] as? String else {
+                        print("Invalid post fetch conversion")
+                        return nil
+                    }
+                    
+                    let post = BlogPost(
+                        identifier: id,
+                        title: title,
+                        timestamp: created,
+                        headerImageUrl: URL(string: imageUrlString),
+                        text: body
+                    )
+                    return post
+                })
+                
+                completion(posts)
+            }
+    }
+    
     public func getPostsForUser(
         user: User,
         completion: @escaping ([BlogPost]) -> Void
@@ -55,6 +96,30 @@ final class DatabaseManager {
             .document(documentId)
             .setData(data) { error in
                 completion(error == nil)
+            }
+    }
+    
+    public func getUser(
+        email: String,
+        completion: @escaping (User?) -> Void
+    ) {
+        let documentId = email
+            .replacingOccurrences(of: ".", with: "_")
+            .replacingOccurrences(of: "@", with: "_")
+        
+        database
+            .collection("users")
+            .document(documentId)
+            .getDocument { snapshot, error in
+                guard let data = snapshot?.data() as? [String: String],
+                      let name = data["name"],
+                      error == nil else {
+                    return
+                }
+                
+                let ref = data["profile_photo"]
+                let user = User(name: name, email: email, profilePictureRef: ref)
+                completion(user)
             }
     }
     

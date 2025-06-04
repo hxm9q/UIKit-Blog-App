@@ -169,7 +169,7 @@ private extension SignUpViewController {
         AuthManager.shared.signUp(email: email, password: password) { [weak self] success in
             if success {
                 loadingIndicator.removeFromSuperview() // убрать если что
-                let newUser = User(name: name, email: email, profilePictureURL: nil)
+                let newUser = User(name: name, email: email, profilePictureRef: nil)
                 DatabaseManager.shared.insert(user: newUser) { inserted in
                     guard inserted else {
                         return
