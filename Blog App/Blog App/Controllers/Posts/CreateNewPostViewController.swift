@@ -155,7 +155,6 @@ class CreateNewPostViewController: UITabBarController {
         picker.delegate = self
         present(picker, animated: true)
     }
-    
 }
 
 // MARK: - Setup Layout
@@ -217,6 +216,6 @@ extension CreateNewPostViewController: UITextViewDelegate {
         guard let stringRange = Range(range, in: currentText) else { return false }
         let updatedText = currentText.replacingCharacters(in: stringRange, with: text)
         
-        return updatedText.count <= 400 // Максимум 400 символов
+        return updatedText.count <= 200 // Максимум 200 символов
     }
 }

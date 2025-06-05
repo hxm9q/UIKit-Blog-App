@@ -18,7 +18,12 @@ class PostHeaderTableViewCellViewModel {
 }
 
 class PostHeaderTableViewCell: UITableViewCell {
+    
+    // MARK: - Identifier
+    
     static let identifier = "PostHeaderTableViewCell"
+    
+    // MARK: - UI Components
     
     private let postImageView: UIImageView = {
         let imageView = UIImageView()
@@ -27,6 +32,8 @@ class PostHeaderTableViewCell: UITableViewCell {
         imageView.contentMode = .scaleAspectFill
         return imageView
     }()
+    
+    // MARK: - Lyfecycle
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -47,6 +54,8 @@ class PostHeaderTableViewCell: UITableViewCell {
         super.prepareForReuse()
         postImageView.image = nil
     }
+    
+    // MARK: - Configure
     
     func configure(with viewModel: PostHeaderTableViewCellViewModel) {
         if let data = viewModel.imageData {

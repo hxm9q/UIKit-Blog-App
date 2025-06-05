@@ -10,7 +10,11 @@ import UIKit
 
 final class HapticsManager {
     
+    // MARK: - Properties
+    
     static let shared = HapticsManager()
+    
+    // MARK: - Methods
     
     private init() {}
     

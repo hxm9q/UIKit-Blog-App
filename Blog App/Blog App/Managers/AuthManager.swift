@@ -10,15 +10,19 @@ import FirebaseAuth
 
 final class AuthManager {
     
+    // MARK: - Properties
+    
     static let shared = AuthManager()
     
     private let auth = Auth.auth()
     
-    private init() {}
-    
     public var isSignedIn: Bool {
         return auth.currentUser != nil
     }
+    
+    // MARK: - Methods
+    
+    private init() {}
     
     public func signUp(
         email: String,
@@ -73,5 +77,4 @@ final class AuthManager {
             completion(false)
         }
     }
-    
 }

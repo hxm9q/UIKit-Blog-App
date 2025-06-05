@@ -20,7 +20,12 @@ class PostPreviewTableViewCellViewModel {
 }
 
 class PostPreviewTableViewCell: UITableViewCell {
+    
+    // MARK: - Identifier
+    
     static let identifier = "PostPreviewTableViewCell"
+    
+    // MARK: - UI Components
     
     private let postImageView: UIImageView = {
         let imageView = UIImageView()
@@ -38,6 +43,8 @@ class PostPreviewTableViewCell: UITableViewCell {
         return label
     }()
     
+    // MARK: - Lyfecycle
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         contentView.clipsToBounds = true
@@ -54,14 +61,14 @@ class PostPreviewTableViewCell: UITableViewCell {
         postImageView.frame = CGRect(
             x: separatorInset.left,
             y: 5,
-            width: contentView.height-10,
-            height: contentView.height-10
+            width: contentView.height - 10,
+            height: contentView.height - 10
         )
         postTitleLabel.frame = CGRect(
-            x: postImageView.right+5,
+            x: postImageView.right + 5,
             y: 5,
-            width: contentView.width-5-separatorInset.left-postImageView.width,
-            height: contentView.height-10
+            width: contentView.width - 5 - separatorInset.left - postImageView.width,
+            height: contentView.height - 10
         )
     }
     
@@ -70,6 +77,8 @@ class PostPreviewTableViewCell: UITableViewCell {
         postTitleLabel.text = nil
         postImageView.image = nil
     }
+    
+    // MARK: - Configure
     
     func configure(with viewModel: PostPreviewTableViewCellViewModel) {
         postTitleLabel.text = viewModel.title

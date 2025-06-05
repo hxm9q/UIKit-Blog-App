@@ -9,6 +9,8 @@ import UIKit
 
 class PayWallDescriptionView: UIView {
     
+    // MARK: - UI Components
+    
     private let descriptionLabel: UILabel = {
         let label = UILabel()
         label.textAlignment = .center
@@ -29,10 +31,11 @@ class PayWallDescriptionView: UIView {
         return label
     }()
     
+    // MARK: - Init
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         clipsToBounds = true
-        
         setupLayout()
     }
     

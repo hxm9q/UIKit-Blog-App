@@ -10,9 +10,13 @@ import FirebaseFirestore
 
 final class StorageManager {
     
+    // MARK: - Properties
+    
     static let shared = StorageManager()
     
     private let storage = Firestore.firestore()
+    
+    // MARK: - Methods
     
     private init() {}
     
@@ -149,5 +153,4 @@ final class StorageManager {
             }
         }
     }
-    
 }

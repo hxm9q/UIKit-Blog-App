@@ -9,6 +9,8 @@ import UIKit
 
 class PayWallHeaderView: UIView {
     
+    // MARK: - UI Components
+    
     private let headerImageView: UIImageView = {
         let imageView = UIImageView(image: UIImage(systemName: "crown.fill"))
         imageView.tintColor = .systemYellow
@@ -16,6 +18,8 @@ class PayWallHeaderView: UIView {
         
         return imageView
     }()
+    
+    // MARK: - Init
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -26,7 +30,6 @@ class PayWallHeaderView: UIView {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
 }
 
 // MARK: - Setup Layout

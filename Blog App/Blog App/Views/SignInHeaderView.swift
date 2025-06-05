@@ -9,6 +9,8 @@ import UIKit
 
 class SignInHeaderView: UIView {
     
+    // MARK: - UI Components
+    
     private let headerImageView: UIImageView = {
         let imageView = UIImageView(image: UIImage(named: "logo"))
         imageView.contentMode = .scaleAspectFit
@@ -26,6 +28,8 @@ class SignInHeaderView: UIView {
         return label
     } ()
     
+    // MARK: - Init
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         clipsToBounds = true
@@ -36,7 +40,6 @@ class SignInHeaderView: UIView {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
 }
 
 // MARK: - Setup Layout

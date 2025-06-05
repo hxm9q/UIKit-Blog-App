@@ -9,14 +9,22 @@ import Foundation
 
 final class IAPManager {
     
-    static let shared = IAPManager()
+    // MARK: - Properties
     
-    private init() {}
+    static let shared = IAPManager()
     
     var isPremium: Bool {
         get { UserDefaults.standard.bool(forKey: "premium") }
         set { UserDefaults.standard.set(newValue, forKey: "premium") }
     }
+    
+    var canViewPost: Bool {
+        return true
+    }
+    
+    // MARK: - Methods
+    
+    private init() {}
     
     func fetchSubscriptionOptions(completion: @escaping (Bool) -> Void) {
         completion(true)

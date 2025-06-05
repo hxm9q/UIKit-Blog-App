@@ -9,15 +9,16 @@ import UIKit
 
 class TabBarViewController: UITabBarController {
     
+    // MARK: - Lyfecycle
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         setupControllers()
     }
-    
 }
 
-// MARK: - Setup Controllers
+// MARK: - Setup UI
+
 private extension TabBarViewController {
     
     func setupControllers() {
