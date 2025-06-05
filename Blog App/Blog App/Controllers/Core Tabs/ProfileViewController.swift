@@ -8,43 +8,44 @@
 import UIKit
 
 class ProfileViewController: UIViewController {
-
+    
     // MARK: - Properties
-
+    
     private var user: User?
     private var posts: [BlogPost] = []
     private let tableView = UITableView()
     let currentEmail: String
-
+    
     // MARK: - Init
-
+    
     init(currentEmail: String) {
         self.currentEmail = currentEmail
         super.init(nibName: nil, bundle: nil)
     }
-
+    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
+    
     // MARK: - Lifecycle
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
+        
         setUpSignOutButton()
         setUpTable()
         title = "Profile"
         fetchPosts()
     }
-
+    
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         tableView.frame = view.bounds
     }
-
+    
     // MARK: - Setup UI
-
+    
     private func setUpTable() {
         view.addSubview(tableView)
         tableView.delegate = self
@@ -56,7 +57,7 @@ class ProfileViewController: UIViewController {
         setUpTableHeader()
         fetchProfileData()
     }
-
+    
     private func setUpTableHeader(profilePhotoRef: String? = nil, name: String? = nil) {
         let headerView = UIView(frame: CGRect(
             x: 0,
@@ -64,11 +65,11 @@ class ProfileViewController: UIViewController {
             width: view.width,
             height: view.width / 1.5
         ))
-        headerView.backgroundColor = .systemBackground
+        headerView.backgroundColor = .systemBlue
         headerView.isUserInteractionEnabled = true
         headerView.clipsToBounds = true
         tableView.tableHeaderView = headerView
-
+        
         // Profile picture
         let profilePhoto = UIImageView(image: UIImage(systemName: "person.circle"))
         profilePhoto.tintColor = .white
@@ -83,10 +84,10 @@ class ProfileViewController: UIViewController {
         profilePhoto.layer.cornerRadius = profilePhoto.width / 2
         profilePhoto.isUserInteractionEnabled = true
         headerView.addSubview(profilePhoto)
-
+        
         let tap = UITapGestureRecognizer(target: self, action: #selector(didTapProfilePhoto))
         profilePhoto.addGestureRecognizer(tap)
-
+        
         // Email label
         let emailLabel = UILabel(frame: CGRect(
             x: 20,
@@ -99,11 +100,11 @@ class ProfileViewController: UIViewController {
         emailLabel.textAlignment = .center
         emailLabel.textColor = .white
         emailLabel.font = .systemFont(ofSize: 25, weight: .bold)
-
+        
         if let name = name {
             title = name
         }
-
+        
         if let ref = profilePhotoRef {
             StorageManager.shared.downloadProfileImage(email: ref) { image in
                 DispatchQueue.main.async {
@@ -112,7 +113,7 @@ class ProfileViewController: UIViewController {
             }
         }
     }
-
+    
     private func setUpSignOutButton() {
         navigationItem.rightBarButtonItem = UIBarButtonItem(
             title: "Sign Out",
@@ -121,9 +122,9 @@ class ProfileViewController: UIViewController {
             action: #selector(didTapSignOut)
         )
     }
-
+    
     // MARK: - Actions
-
+    
     @objc private func didTapProfilePhoto() {
         guard
             let myEmail = UserDefaults.standard.string(forKey: "email"),
@@ -131,14 +132,14 @@ class ProfileViewController: UIViewController {
         else {
             return
         }
-
+        
         let picker = UIImagePickerController()
         picker.sourceType = .photoLibrary
         picker.delegate = self
         picker.allowsEditing = true
         present(picker, animated: true)
     }
-
+    
     @objc private func didTapSignOut() {
         let alert = UIAlertController(
             title: "Sign Out",
@@ -166,9 +167,9 @@ class ProfileViewController: UIViewController {
         }))
         present(alert, animated: true)
     }
-
+    
     // MARK: - Data Fetching
-
+    
     private func fetchProfileData() {
         DatabaseManager.shared.getUser(email: currentEmail) { [weak self] user in
             guard let user = user else {
@@ -197,12 +198,14 @@ class ProfileViewController: UIViewController {
 
 // MARK: - UITableViewDelegate, UITableViewDataSource
 
-extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
+extension ProfileViewController: UITableViewDelegate & UITableViewDataSource {
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return posts.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
         let post = posts[indexPath.row]
         guard let cell = tableView.dequeueReusableCell(
             withIdentifier: PostPreviewTableViewCell.identifier,
@@ -211,6 +214,7 @@ extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
             fatalError()
         }
         cell.configure(with: .init(title: post.title, imageUrl: post.headerImageUrl))
+        
         return cell
     }
     
@@ -219,6 +223,7 @@ extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
         tableView.deselectRow(at: indexPath, animated: true)
         HapticsManager.shared.vibrateForSelection()
         
@@ -237,7 +242,8 @@ extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
 
 // MARK: - UIImagePickerControllerDelegate, UINavigationControllerDelegate
 
-extension ProfileViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+extension ProfileViewController: UIImagePickerControllerDelegate & UINavigationControllerDelegate {
+    
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
         picker.dismiss(animated: true, completion: nil)
     }
@@ -246,6 +252,7 @@ extension ProfileViewController: UIImagePickerControllerDelegate, UINavigationCo
         _ picker: UIImagePickerController,
         didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]
     ) {
+        
         picker.dismiss(animated: true, completion: nil)
         guard let image = info[.editedImage] as? UIImage else {
             return
