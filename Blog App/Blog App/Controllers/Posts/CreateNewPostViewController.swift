@@ -115,7 +115,7 @@ class CreateNewPostViewController: UITabBarController {
             }
             
             StorageManager.shared.downloadUrlForPostHeader(email: email, postId: newPostId) { url in
-                guard let headerUrl = url else {
+                guard url != nil else {
                     DispatchQueue.main.async {
                         HapticsManager.shared.vibrate(for: .error)
                     }

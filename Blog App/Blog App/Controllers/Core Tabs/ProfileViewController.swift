@@ -13,8 +13,27 @@ class ProfileViewController: UIViewController {
     
     private var user: User?
     private var posts: [BlogPost] = []
-    private let tableView = UITableView()
     let currentEmail: String
+    
+    // MARK: - UI Components
+    
+    private let tableView = UITableView()
+    
+    private let premiumButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(
+            systemName: "crown.fill",
+            withConfiguration: UIImage.SymbolConfiguration(pointSize: 32, weight: .medium)),
+                        for: .normal)
+        button.tintColor = .systemYellow
+        button.backgroundColor = .systemBlue
+        button.layer.cornerRadius = 30
+        button.layer.shadowColor = UIColor.label.cgColor
+        button.layer.shadowOpacity = 0.4
+        button.layer.shadowRadius = 10
+        
+        return button
+    }()
     
     // MARK: - Init
     
@@ -33,6 +52,7 @@ class ProfileViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
         
+        setupPremiumButton()
         setUpSignOutButton()
         setUpTable()
         title = "Profile"
@@ -42,9 +62,23 @@ class ProfileViewController: UIViewController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         tableView.frame = view.bounds
+        view.bringSubviewToFront(premiumButton)
     }
     
     // MARK: - Setup UI
+    
+    private func setupPremiumButton() {
+        view.addSubview(premiumButton)
+        premiumButton.addTarget(self, action: #selector(premiumButtonTapped), for: .touchUpInside)
+        
+        premiumButton.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            premiumButton.widthAnchor.constraint(equalToConstant: 60),
+            premiumButton.heightAnchor.constraint(equalToConstant: 60),
+            premiumButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -28),
+            premiumButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -28)
+        ])
+    }
     
     private func setUpTable() {
         view.addSubview(tableView)
@@ -166,6 +200,12 @@ class ProfileViewController: UIViewController {
             }
         }))
         present(alert, animated: true)
+    }
+    
+    @objc private func premiumButtonTapped() {
+        let vc = PayWallViewController()
+        let navVC = UINavigationController(rootViewController: vc)
+        self.present(navVC, animated: true, completion: nil)
     }
     
     // MARK: - Data Fetching
